@@ -14,6 +14,7 @@
 - **Automatic Matching** – Matches buy and sell orders whenever a new order is added or amended
 - **FIFO Within Price Level** – Orders at the same price follow first-in-first-out priority
 - **Order Lookup Table** – O(1) access to orders by ID
+- **Memory Pool Allocator** – Efficient custom allocator used for order objects to reduce heap fragmentation and improve performance
 
 ## How to Run
 
