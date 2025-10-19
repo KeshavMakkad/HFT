@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
+#include "MemoryPool.cpp"
 
 using namespace std;
 
@@ -54,23 +55,21 @@ static uint64_t get_current_timestamp()
             .count());
 }
 
-struct OrderBook
-{
+struct OrderBook {
 private:
     unordered_map<uint64_t, Order *> orders;
     set<Order *, BuyComparator> buyOrders;
     set<Order *, SellComparator> sellOrders;
+    MemoryPool<Order> pool; // 🔹 Our memory pool
 
 public:
-    ~OrderBook()
-    {
+    ~OrderBook() {
         for (auto &[id, order] : orders)
-            delete order;
+            pool.deallocate(order);
     }
 
-    void addOrder(const Order &order)
-    {
-        Order *o = new Order(order);
+    void addOrder(const Order &order) {
+        Order *o = pool.allocate(order.id, order.isBuy, order.price, order.quantity, order.timestampInNanoSeconds);
         orders[order.id] = o;
         if (order.isBuy)
             buyOrders.insert(o);
@@ -79,39 +78,31 @@ public:
         match();
     }
 
-    bool cancelOrder(uint64_t orderId)
-    {
+    bool cancelOrder(uint64_t orderId) {
         auto it = orders.find(orderId);
         if (it == orders.end())
-        {
             return false;
-        }
 
         Order *order = it->second;
         if (order->isBuy)
             buyOrders.erase(order);
         else
             sellOrders.erase(order);
-        delete order;
+        pool.deallocate(order);
         orders.erase(it);
         return true;
     }
 
-    bool amendOrder(uint64_t orderId, double newPrice, uint64_t newQuantity)
-    {
+    bool amendOrder(uint64_t orderId, double newPrice, uint64_t newQuantity) {
         auto it = orders.find(orderId);
         if (it == orders.end())
-        {
             return false;
-        }
 
         Order *order = it->second;
 
-        if (order->price != newPrice)
-        {
+        if (order->price != newPrice) {
             bool isBuy = order->isBuy;
             cancelOrder(orderId);
-
             Order newOrder(orderId, isBuy, newPrice, newQuantity, get_current_timestamp());
             addOrder(newOrder);
             return true;
