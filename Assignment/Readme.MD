@@ -2,7 +2,7 @@
 
 **Assignment by:** Keshav Makkad -- 23BCS10002
 
-**Assignemnt details:**- https://docs.google.com/document/d/1vQYv7E019rpnH6kcB3AQQhFXoehA30b2QVWKSxlEv7k/edit?tab=t.0#heading=h.t7g6yetiucc8
+**Assignment details:**- https://docs.google.com/document/d/1vQYv7E019rpnH6kcB3AQQhFXoehA30b2QVWKSxlEv7k/edit?tab=t.0#heading=h.t7g6yetiucc8
 
 ## Features Implemented
 
